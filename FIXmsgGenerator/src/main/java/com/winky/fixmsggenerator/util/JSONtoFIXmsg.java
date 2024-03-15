@@ -26,8 +26,8 @@ public class JSONtoFIXmsg {
         FIELD_NUM_MAPPING.put("LastQty", 32);
         FIELD_NUM_MAPPING.put("NoMiscFees", 136);
         FIELD_NUM_MAPPING.put("MiscFeeAmt", 137);
-        FIELD_NUM_MAPPING.put("MiscFeeCurr", 13);
-        FIELD_NUM_MAPPING.put("MiscFeeType", 13);
+        FIELD_NUM_MAPPING.put("MiscFeeCurr", 138);
+        FIELD_NUM_MAPPING.put("MiscFeeType", 139);
         FIELD_NUM_MAPPING.put("MiscFeeBasis", 891);
         FIELD_NUM_MAPPING.put("Currency", 15);
         FIELD_NUM_MAPPING.put("Text", 58);
