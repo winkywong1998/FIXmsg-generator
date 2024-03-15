@@ -28,7 +28,7 @@
   "MiscFeeAmt": 5.0,
   "MiscFeeCurr": "USD",
   "MiscFeeType": "Regulatory",
-  "MiscFeeBasis": "basis123",
+  "MiscFeeBasis": "123",
   "Currency": "USD",
   "Text": "This is a test message",
   "LastMkt": "market123"
