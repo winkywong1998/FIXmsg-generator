@@ -72,4 +72,6 @@ public class JSONtoFIXmsg {
         }
         return sum % 256;
     }
+
+
 }

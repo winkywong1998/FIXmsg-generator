@@ -2,6 +2,7 @@ package com.winky.fixmsggenerator.controller;
 import com.winky.fixmsggenerator.util.FIXmsgToExecutionReport;
 import com.winky.fixmsggenerator.util.FIXmsgToQuickFIXObj;
 import com.winky.fixmsggenerator.util.JSONtoFIXmsg;
+import com.winky.fixmsggenerator.util.JSONtoFIXmsg2;
 import org.json.JSONObject;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,7 +18,7 @@ public class GenerationController {
     public String generateFIXMessage(@RequestBody String requestBody) {
         try {
             JSONObject inputJson = new JSONObject(requestBody);
-            String fixMessage = JSONtoFIXmsg.generateFIXMessage(inputJson);
+            String fixMessage = JSONtoFIXmsg2.generateFIXMessage(inputJson);
             return fixMessage;
         } catch (Exception e) {
             return "Error: " + e.getMessage();
