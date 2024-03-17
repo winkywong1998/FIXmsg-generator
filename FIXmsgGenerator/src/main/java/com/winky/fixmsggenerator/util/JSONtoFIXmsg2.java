@@ -4,15 +4,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import quickfix.DataDictionary;
 import quickfix.Group;
-import quickfix.StringField;
+
 import quickfix.field.MsgType;
 import quickfix.fix44.Message;
 
 import java.io.InputStream;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.*;
 
 public class JSONtoFIXmsg2 {
 
@@ -68,6 +65,7 @@ public class JSONtoFIXmsg2 {
         // Replace SOH with |
         fixMessage = fixMessage.replaceAll("\u0001", "|");
         if(!multipleValTag.isEmpty()) fixMessage = removeFirstOccurrences(fixMessage, multipleValTag);
+        fixMessage = sortTags(fixMessage);
         return fixMessage;
     }
 
@@ -108,4 +106,34 @@ public class JSONtoFIXmsg2 {
         return result.toString();
     }
 
+    public static String sortTags(String input) {
+        String[] parts = input.split("\\|");
+        List<String> tagValuePairs = Arrays.asList(parts);
+
+        // Custom comparator to sort tag-value pairs based on tag number
+        Comparator<String> comparator = new Comparator<String>() {
+            @Override
+            public int compare(String pair1, String pair2) {
+                int tag1 = Integer.parseInt(pair1.split("=")[0]);
+                int tag2 = Integer.parseInt(pair2.split("=")[0]);
+                return Integer.compare(tag1, tag2);
+            }
+        };
+
+        // Sort the tag-value pairs
+        Collections.sort(tagValuePairs, comparator);
+
+        // Concatenate sorted tag-value pairs back into a single string
+        StringBuilder sortedString = new StringBuilder();
+        for (String pair : tagValuePairs) {
+            sortedString.append(pair).append("|");
+        }
+
+        // Remove trailing '|'
+        if (sortedString.length() > 0) {
+            sortedString.deleteCharAt(sortedString.length() - 1);
+        }
+
+        return sortedString.toString();
+    }
 }
