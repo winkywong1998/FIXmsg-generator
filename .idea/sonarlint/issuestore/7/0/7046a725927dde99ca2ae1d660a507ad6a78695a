@@ -1,0 +1,16 @@
+
+b	java:S112"FDefine and throw a dedicated exception instead of using a generic one.(ƒœ„ú8ìÚö¾ä1
+U
+java:S1118
+":Add a private constructor to hide the implicit public one.(ÜĞ‰êûÿÿÿÿ
+V
+java:S1854"9Remove this useless assignment to local variable "value".(Ïø×•8Û×ì¾ä1
+G
+java:S1481"*Remove this unused "value" local variable.(Ïø×•8‡Øì¾ä1
+}
+java:S3923"[Remove this conditional structure or edit its code blocks so that they're not all the same.(Šóûÿÿÿÿ8©Ûö¾ä1
+E	java:S108")Either remove or fill this block of code.(å¥‡8ˆØì¾ä1
+V
+java:S1128"4Remove this unused import 'java.time.LocalDateTime'.(æÃ§ƒüÿÿÿÿ8©Ûö¾ä1
+\
+java:S1128"?Remove this unused import 'java.time.format.DateTimeFormatter'.(‰÷÷ª8©Ûö¾ä1
