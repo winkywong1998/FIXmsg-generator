@@ -29,29 +29,32 @@ public class JSONtoFIXmsg2 {
         for (String key : input.keySet()) {
             int field = getFieldNumber(key);
             Object value = input.get(key);
-            if (value instanceof String) {
-                message.setString(field, (String) value);
-            } else if (value instanceof Integer) {
-                message.setInt(field, (Integer) value);
-            } else if (value instanceof Double) {
-                message.setDouble(field, (Double) value);
-            } else if (value instanceof JSONArray) {
-                JSONArray jsonArray = (JSONArray) value;
-                if (!jsonArray.isEmpty()) {
-                    if (key.equals("SecurityAlt")) {
-                        handleSecurityAltIDGroup(jsonArray, message);
-                    } else if (key.equals("MiscFee")) {
-                        handleMiscFeesGroup(jsonArray, message);
+            if(field > 0){
+                if (value instanceof String) {
+                    message.setString(field, (String) value);
+                } else if (value instanceof Integer) {
+                    message.setInt(field, (Integer) value);
+                } else if (value instanceof Double) {
+                    message.setDouble(field, (Double) value);
+                }
+            }else{
+                // Deal with the group:
+                // Note that There will be two groups
+                // First is key 454(NoSecurityAltID) having 455(SecurityAltID) as the delim Order should be [455(SecurityAltID), 456(SecuritAltIDSource)]
+                // Second is key 136(NoMiscFees) having 137(MiscFeeAmt) as the delim Order should be [137(MiscFeeAmt) , 138(MiscFeeCurr), 139(MiscFeeType), 891(MiscFeeBasis)]
+                if (value instanceof JSONArray) {
+                    JSONArray jsonArray = (JSONArray) value;
+                    if (!jsonArray.isEmpty()) {
+                        if (key.equals("SecurityAlt")) {
+                            handleSecurityAltIDGroup(jsonArray, message);
+                        } else if (key.equals("MiscFee")) {
+                            handleMiscFeesGroup(jsonArray, message);
+                        }
                     }
                 }
+                // Might want to throw error here because when value is not an JSONArray and field is <=0 then invalid
             }
-
             // Note that the trailer  will be generated automatically
-
-            // Deal with the group:
-            // Note that There will be two groups
-            // First is key 136(NoMiscFees) having 137(MiscFeeAmt) as the delim Order should be [137(MiscFeeAmt) , 138(MiscFeeCurr), 139(MiscFeeType), 891(MiscFeeBasis)]
-            // Second is key 454(NoSecurityAltID) having 455(SecurityAltID) as the delim Order should be [455(SecurityAltID), 456(SecuritAltIDSource)]
         }
         String fixMessage = message.toString().replaceAll("\u0001", "|");
         return fixMessage;
