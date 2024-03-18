@@ -9,12 +9,10 @@ import quickfix.field.MsgType;
 import quickfix.fix44.Message;
 
 import java.io.InputStream;
-import java.util.*;
 
 public class JSONtoFIXmsg2 {
 
     private static DataDictionary dataDictionary;
-    private static List<Integer> multipleValTag = new LinkedList();
 
     static {
         try (InputStream inputStream = JSONtoFIXmsg2.class.getResourceAsStream("/FIX44.xml")) {
@@ -41,6 +39,13 @@ public class JSONtoFIXmsg2 {
                 }
             }
         }
+        // Note that the trailer  will be generated automatically
+
+        // Deal with the group:
+        // Note that There will be two groups
+        // First is key 136(NoMiscFees) having 137(MiscFeeAmt) as the delim Order should be [137(MiscFeeAmt) , 138(MiscFeeCurr), 139(MiscFeeType), 891(MiscFeeBasis)]
+        // Second is key 454(NoSecurityAltID) having 455(SecurityAltID) as the delim Order should be [455(SecurityAltID), 456(SecuritAltIDSource)]
+
         // Handling NoSecurityAltID group
         if (input.has("NoSecurityAltID")) {
             handleSecurityAltIDGroup(input, message);
