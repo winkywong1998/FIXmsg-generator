@@ -28,67 +28,58 @@ public class JSONtoFIXmsg2 {
         message.getHeader().setString(MsgType.FIELD, "8");
         for (String key : input.keySet()) {
             int field = getFieldNumber(key);
-            if (field > 0) {
-                Object value = input.get(key);
-                if (value instanceof String) {
-                    message.setString(field, (String) value);
-                } else if (value instanceof Integer) {
-                    message.setInt(field, (Integer) value);
-                } else if (value instanceof Double) {
-                    message.setDouble(field, (Double) value);
+            Object value = input.get(key);
+            if (value instanceof String) {
+                message.setString(field, (String) value);
+            } else if (value instanceof Integer) {
+                message.setInt(field, (Integer) value);
+            } else if (value instanceof Double) {
+                message.setDouble(field, (Double) value);
+            } else if (value instanceof JSONArray) {
+                JSONArray jsonArray = (JSONArray) value;
+                if (!jsonArray.isEmpty()) {
+                    if (key.equals("SecurityAlt")) {
+                        handleSecurityAltIDGroup(jsonArray, message);
+                    } else if (key.equals("MiscFee")) {
+                        handleMiscFeesGroup(jsonArray, message);
+                    }
                 }
             }
+
+            // Note that the trailer  will be generated automatically
+
+            // Deal with the group:
+            // Note that There will be two groups
+            // First is key 136(NoMiscFees) having 137(MiscFeeAmt) as the delim Order should be [137(MiscFeeAmt) , 138(MiscFeeCurr), 139(MiscFeeType), 891(MiscFeeBasis)]
+            // Second is key 454(NoSecurityAltID) having 455(SecurityAltID) as the delim Order should be [455(SecurityAltID), 456(SecuritAltIDSource)]
         }
-        // Note that the trailer  will be generated automatically
-
-        // Deal with the group:
-        // Note that There will be two groups
-        // First is key 136(NoMiscFees) having 137(MiscFeeAmt) as the delim Order should be [137(MiscFeeAmt) , 138(MiscFeeCurr), 139(MiscFeeType), 891(MiscFeeBasis)]
-        // Second is key 454(NoSecurityAltID) having 455(SecurityAltID) as the delim Order should be [455(SecurityAltID), 456(SecuritAltIDSource)]
-
-        // Handling NoSecurityAltID group
-        if (input.has("NoSecurityAltID")) {
-            handleSecurityAltIDGroup(input, message);
-        }
-
-        // Handling NoMiscFees group
-        if (input.has("NoMiscFees")) {
-            handleMiscFeesGroup(input, message);
-        }
-
         String fixMessage = message.toString().replaceAll("\u0001", "|");
         return fixMessage;
     }
 
-    private static void handleSecurityAltIDGroup(JSONObject input, Message message) {
-        JSONArray altIds = input.getJSONArray("SecurityAltID");
-        JSONArray altIdSources = input.getJSONArray("SecurityAltIDSource");
-        Group securityAltIdGroup = new Group(454, 455);
+        private static void handleSecurityAltIDGroup (JSONArray input, Message message){
+            Group securityAltIdGroup = new Group(454, 455);
+            for (int i = 0; i < input.length(); i++) {
+                JSONObject altIdObj = input.getJSONObject(i);
+                securityAltIdGroup.setString(455, altIdObj.getString("SecurityAltID"));
+                securityAltIdGroup.setString(456, altIdObj.getString("SecurityAltIDSource"));
+                message.addGroup(securityAltIdGroup);
+            }
+        }
 
-        for (int i = 0; i < altIds.length(); i++) {
-            securityAltIdGroup.setString(455, altIds.getString(i));
-            securityAltIdGroup.setString(456, altIdSources.getString(i));
-            message.addGroup(securityAltIdGroup);
+        private static void handleMiscFeesGroup (JSONArray input, Message message){
+            Group miscFeesGroup = new Group(136, 137);
+            for (int i = 0; i < input.length(); i++) {
+                JSONObject feeObj = input.getJSONObject(i);
+                miscFeesGroup.setDouble(137, feeObj.getDouble("MiscFeeAmt"));
+                miscFeesGroup.setString(138, feeObj.getString("MiscFeeCurr"));
+                miscFeesGroup.setString(139, feeObj.getString("MiscFeeType"));
+                miscFeesGroup.setString(891, feeObj.getString("MiscFeeBasis"));
+                message.addGroup(miscFeesGroup);
+            }
+        }
+
+        private static int getFieldNumber (String fieldName){
+            return dataDictionary.getFieldTag(fieldName);
         }
     }
-
-    private static void handleMiscFeesGroup(JSONObject input, Message message) {
-        JSONArray feeAmts = input.getJSONArray("MiscFeeAmt");
-        JSONArray feeCurrs = input.getJSONArray("MiscFeeCurr");
-        JSONArray feeTypes = input.getJSONArray("MiscFeeType");
-        JSONArray feeBases = input.getJSONArray("MiscFeeBasis");
-        Group miscFeesGroup = new Group(136, 137);
-
-        for (int i = 0; i < feeAmts.length(); i++) {
-            miscFeesGroup.setDouble(137, feeAmts.getDouble(i));
-            miscFeesGroup.setString(138, feeCurrs.getString(i));
-            miscFeesGroup.setString(139, feeTypes.getString(i));
-            miscFeesGroup.setString(891, feeBases.getString(i));
-            message.addGroup(miscFeesGroup);
-        }
-    }
-
-    private static int getFieldNumber(String fieldName) {
-        return dataDictionary.getFieldTag(fieldName);
-    }
-}

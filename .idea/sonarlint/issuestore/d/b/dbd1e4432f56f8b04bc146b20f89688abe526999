@@ -1,0 +1,12 @@
+
+P
+java:S1118	":Add a private constructor to hide the implicit public one.(ÔâËÝ
+S	java:S106"9Replace this use of System.out or System.err by a logger.( ì¼¶øÿÿÿÿ
+N	java:S106"9Replace this use of System.out or System.err by a logger.(Ð²°¡
+S	java:S106"9Replace this use of System.out or System.err by a logger.(žÝÐõúÿÿÿÿ
+N	java:S106"9Replace this use of System.out or System.err by a logger.(Ñ‡©ƒ
+X
+java:S1479$"BReduce the number of non-empty switch cases from 35 to at most 30.(¹ŠÒÓ
+Ý
+java:S6541
+"ÆA "Brain Method" was detected. Refactor it to reduce at least one of the following metrics: LOC from 133 to 64, Complexity from 42 to 14, Nesting Level from 3 to 2, Number of Variables from 11 to 6.(•˜‹¾
